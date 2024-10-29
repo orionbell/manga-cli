@@ -38,10 +38,9 @@ get_pages(){
 get_page(){
     base_url=$(echo "$1" | jq -r '.baseUrl')
     chapter_hash=$(echo "$1" | jq -r '.chapter.hash')
-    page=$(echo "$1" | jq -r ".chapter.data[$2]")
-    echo "$base_url/data/$chapter_hash/$page"
+    page=$(echo "$1" | jq -r ".chapter.dataSaver[$2]")
+    echo "$base_url/data-saver/$chapter_hash/$page"
 }
-#clean(){}
 
 setup
 printf "Manga name: "
@@ -68,3 +67,45 @@ num=0
 page=$(get_page "$pages_obj" $num)
 clear
 kitty icat "$page"
+printf "\nn - next, p - previous, j - jump, q - quit"
+read -rsn1 choice
+while [ "$choice" != "q" ]
+do
+    while :
+    do
+        if [ "$choice" = "n" ]; then
+            if [ $num -ge $length ]; then
+                num=0
+            else
+                ((num=num+1))
+            fi
+            break
+        elif [ "$choice" = "p" ]; then
+            if [ $num -le 0 ]; then
+                $num=$(echo $length)
+            fi
+            ((num=num-1))
+            break
+        elif [ "$choice" = "j" ]; then
+            printf "\npage number (0 - %s): " "$length"
+            read new_num
+            if [ $num -ge $length ] || [ $num -lt 0 ]; then
+                read -rsn1 choice
+                continue
+            else
+                num=$(echo $new_num)
+                break
+            fi
+        else
+            read -rsn1 choice
+            continue
+        fi
+    done
+    page=$(get_page "$pages_obj" $num)
+    clear
+    kitty icat "$page"
+    printf "\nn - next, p - previous, j - jump, q - quit"
+    read -rsn1 choice   
+done
+
+
