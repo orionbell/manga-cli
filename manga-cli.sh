@@ -7,15 +7,15 @@ setup(){
     fi
 }
 get_fullname(){
-    search_results=$(curl --silent -G "https://api.mangadex.org/manga" --data-urlencode "title=$name" | jq -r .data)
+    search_results=$(curl --silent -G "https://api.mangadex.org/manga" --data-urlencode "title=$name" | jq -r ".data[]")
     if [ -z "$search_results" ];then
-        printf "Not results found :(\n"
-        return 1
+        exit
     fi
-    name=$(echo $search_results | jq -r '.[].attributes.title.en' | fzf )
+    name=$(echo $search_results | jq -r '.attributes.title.en' | fzf )
     echo "$name"
 }
-
+#show_cover(){
+#}
 #download_page(){}
 #clean(){}
 
@@ -23,7 +23,8 @@ setup
 printf "Manga name: "
 read name
 name=$(get_fullname "$name")
-if [ "$name" == "1" ]; then
+if [ -z "$name" ]; then
+    printf "No result have been found :(\n"
     exit -1
 fi
 echo $name
