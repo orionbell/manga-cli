@@ -3,6 +3,10 @@
 A bash script that lets you read manga without leaving the terminal!
 
 
+https://github.com/user-attachments/assets/526f962c-be89-4289-94a2-f130152bda09
+
+
+
 ## Dependencies
 - [fzf](https://github.com/junegunn/fzf)
 - [jq](https://github.com/jqlang/jq)
