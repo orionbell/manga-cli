@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-setup(){
-    clear
-}
 get_fullname(){
     search_results=$(curl --silent -G "https://api.mangadex.org/manga" --data-urlencode "title=$name" | jq -r ".data[]")
     if [ -z "$search_results" ];then
@@ -42,7 +39,7 @@ get_page(){
     echo "$base_url/data-saver/$chapter_hash/$page"
 }
 
-setup
+clear
 printf "Manga name: "
 read name
 name=$(get_fullname "$name")
@@ -56,6 +53,7 @@ id=$(echo $cover | awk -F '/' '{print $5}')
 chapter=$(get_chapter $id)
 if [ -z "$chapter" ]; then
     printf "No chapters have been found :("
+    exit -1
 fi
 
 volume=$(echo "$chapter" | awk '{print $2}')
