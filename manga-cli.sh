@@ -14,12 +14,19 @@ get_fullname(){
     name=$(echo $search_results | jq -r '.attributes.title.en' | fzf )
     echo "$name"
 }
-show_cover(){
+get_cover(){
     obj=$(curl --silent -G "https://api.mangadex.org/manga" --data-urlencode "includes[]=cover_art" --data-urlencode "title=$1" | jq -r ".data[0]")
     manga_id=$(echo $obj | jq -r .id)
     filename=$(echo $obj | jq -r '.relationships[] | select(.type=="cover_art").attributes.fileName')
-    kitty icat "https://uploads.mangadex.org/covers/$manga_id/$filename.512.jpg"
-    echo "$manga_id"
+    echo "https://uploads.mangadex.org/covers/$manga_id/$filename.512.jpg"
+}
+get_chapter(){
+    chapters=$(curl --silent "https://api.mangadex.org/manga/$1/feed" | jq -r '.data[]')
+    if [ -z "$chapters" ]; then
+        exit
+    fi
+    chapter=$(echo $chapters | jq -r '"Vol \(.attributes.volume) Chapter \(.attributes.chapter)"'| fzf --height 30% --border)
+    echo "$chapter"
 }
 #download_page(){}
 #clean(){}
@@ -32,5 +39,13 @@ if [ -z "$name" ]; then
     printf "No result have been found :(\n"
     exit -1
 fi
-id=$(show_cover "$name")
-echo $id
+cover=$(get_cover "$name")
+kitty icat "$cover"
+id=$(echo $cover | awk -F '/' '{print $5}')
+chapter=$(get_chapter $id)
+if [ -z "$chapter" ]; then
+    printf "No chapters have been found :("
+fi
+echo "$chapter"
+
+
