@@ -14,8 +14,13 @@ get_fullname(){
     name=$(echo $search_results | jq -r '.attributes.title.en' | fzf )
     echo "$name"
 }
-#show_cover(){
-#}
+show_cover(){
+    obj=$(curl --silent -G "https://api.mangadex.org/manga" --data-urlencode "includes[]=cover_art" --data-urlencode "title=$1" | jq -r ".data[0]")
+    manga_id=$(echo $obj | jq -r .id)
+    filename=$(echo $obj | jq -r '.relationships[] | select(.type=="cover_art").attributes.fileName')
+    kitty icat "https://uploads.mangadex.org/covers/$manga_id/$filename.512.jpg"
+    echo "$manga_id"
+}
 #download_page(){}
 #clean(){}
 
@@ -27,4 +32,5 @@ if [ -z "$name" ]; then
     printf "No result have been found :(\n"
     exit -1
 fi
-echo $name
+id=$(show_cover "$name")
+echo $id
