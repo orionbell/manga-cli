@@ -46,6 +46,11 @@ chapter=$(get_chapter $id)
 if [ -z "$chapter" ]; then
     printf "No chapters have been found :("
 fi
+
+volume=$(echo "$chapter" | awk '{print $2}')
+chapter=$(echo "$chapter" | awk '{print $4}')
+
+echo "$volume"
 echo "$chapter"
 
 
