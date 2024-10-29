@@ -72,7 +72,7 @@ do
     while :
     do
         if [ "$choice" = "n" ]; then
-            if [ $num -ge $length ]; then
+            if [ $num -ge $((length-1)) ]; then
                 num=0
             else
                 ((num=num+1))
